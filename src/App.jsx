@@ -3,14 +3,14 @@ import * as React from 'react'
 import './App.css'
 
 
-function reducer({state,action}) {
+function reducer(state,action) {
   switch (action.type) {
     case 'LOADING':
-      return {info: {}, isLoading: true, isError: false}
+      return {info: [], isLoading: true, isError: false}
     case 'LOADED':
       return {info: action.payload, isLoading: false, isError: false}
     case 'ERROR':
-      return {info : {}, isLoading: false, isError: action.payload}
+      return {info : [], isLoading: false, isError: action.payload}
     default:
       return state
   }
@@ -35,7 +35,7 @@ function App() {
   const handlerInput = React.useCallback((e) => {
     const newValue = e.target.value 
     setTerm(newValue)
-  },[term])
+  },[])
   
 
   const handleConfirmSrch = React.useCallback((e) => {
@@ -69,14 +69,16 @@ function App() {
 
 
   return (
-    <>
+    <div className="app-container">
       <h1>REST Countries</h1>
-      <InputWithButton id='search' type='text' value={term} onHandler={handlerInput} onConfirm={handleConfirmSrch} />
+      <div className="search-container">
+        <InputWithButton id='search' type='text' value={term} onHandler={handlerInput} onConfirm={handleConfirmSrch} />
+      </div>
       <div>
-        {data.isError && <p>{data.isError}</p>}
+        {data.isError && <p className="error-message">{data.isError}</p>}
         {data.isLoading ? (<div className="spinner"></div>) : (<List items={data.info} />)}
       </div>
-    </>
+    </div>
   )
 }
 
@@ -92,7 +94,29 @@ function InputWithButton({id, type, value, onHandler, onConfirm}) {
 
 
 function List({items}) {
-  console.log(items);
+  if (!items.length) return null;
+  
+  return (
+    <div className="countries-grid">
+      {items.map(country => (
+        <div key={country.name.common} className="country-card">
+          <img 
+            className="country-flag" 
+            src={country.flags.png} 
+            alt={`Flag of ${country.name.common}`}
+          />
+          <div className="country-info">
+            <h2 className="country-name">{country.name.common}</h2>
+            <div className="country-details">
+              <p><strong>Capital:</strong> {country.capital?.[0] || 'N/A'}</p>
+              <p><strong>Region:</strong> {country.region}</p>
+              <p><strong>Population:</strong> {country.population.toLocaleString()}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 
