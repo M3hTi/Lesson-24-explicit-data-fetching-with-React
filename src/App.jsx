@@ -98,23 +98,26 @@ function List({items}) {
   
   return (
     <div className="countries-grid">
-      {items.map(country => (
-        <div key={country.name.common} className="country-card">
+      {items.map(country => {
+        const {name:{common}, flags:{png}, region, capital ,population} = country
+        const [first] = capital
+        return(
+        <div key={common} className="country-card">
           <img 
             className="country-flag" 
-            src={country.flags.png} 
-            alt={`Flag of ${country.name.common}`}
+            src={png} 
+            alt={`Flag of ${common}`}
           />
           <div className="country-info">
-            <h2 className="country-name">{country.name.common}</h2>
+            <h2 className="country-name">{common}</h2>
             <div className="country-details">
-              <p><strong>Capital:</strong> {country.capital?.[0] || 'N/A'}</p>
-              <p><strong>Region:</strong> {country.region}</p>
-              <p><strong>Population:</strong> {country.population.toLocaleString()}</p>
+              <p><strong>Capital:</strong> { first || 'N/A'}</p>
+              <p><strong>Region:</strong> {region}</p>
+              <p><strong>Population:</strong> {population.toLocaleString()}</p>
             </div>
           </div>
         </div>
-      ))}
+      )})}
     </div>
   );
 }
