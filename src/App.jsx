@@ -46,16 +46,23 @@ function App() {
 
 
   const fetchData = React.useCallback(() => {
-    if(confirmSearch === '') return 
-      dispatchData({type: 'LOADING'})
+    if(confirmSearch === '') {
+      dispatchData({type: 'LOADED', payload: []})
+      return
+    }
+    
+    dispatchData({type: 'LOADING'})
     fetch(`https://restcountries.com/v3.1/name/${confirmSearch}`)
       .then(response => {
-        if(!response.ok) throw new Error("Error is occurred");
+        if(!response.ok) throw new Error("No countries found");
         return response.json()
       })
       .then(data => dispatchData({type: 'LOADED', payload: data}))
       .catch(error => {
         dispatchData({type: 'ERROR', payload: error.message})
+        setTimeout(() => {
+          dispatchData({type: 'LOADED', payload: []})
+        }, 3000)
       });
   },[confirmSearch])
 
@@ -76,7 +83,11 @@ function App() {
       </div>
       <div>
         {data.isError && <p className="error-message">{data.isError}</p>}
-        {data.isLoading ? (<div className="spinner"></div>) : (<List items={data.info} />)}
+        {data.isLoading ? (
+          <div className="spinner"></div>
+        ) : (
+          confirmSearch && <List items={data.info} />
+        )}
       </div>
     </div>
   )
